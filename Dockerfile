@@ -1,11 +1,16 @@
-# Use uma imagem base com Java 17
-FROM eclipse-temurin:17-jre-alpine
+FROM maven:3.9.7-eclipse-temurin-21-alpine AS build
 
-# Copie o JAR compilado para dentro do container
-COPY target/CRUD-java-0.0.1-SNAPSHOT.jar app.jar
+WORKDIR /app
+COPY pom.xml ./
+COPY src ./src
 
-# Expõe a porta que sua aplicação usa
+RUN mvn clean package -DskipTests
+
+# Final lightweight image for execution only
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8081
-
-# Comando para rodar a aplicação
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+CMD ["java", "-jar", "app.jar"]
