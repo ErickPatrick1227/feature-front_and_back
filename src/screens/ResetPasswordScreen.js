@@ -35,6 +35,7 @@ const RedefinirSenha = () => {
       const response = await axios.post("http://localhost:8081/api/auth/reset-password", {
         email,
         novaSenha: senha,
+        confirmarSenha: confirmarSenha,
       });
 
       if (response.status === 200) {
